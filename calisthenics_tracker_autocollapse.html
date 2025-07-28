@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Calisthenics Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    h2 { color: #333; }
+    .day-container { margin-bottom: 10px; background: #fff; padding: 10px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .day-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: bold; }
+    .exercise-list { display: block; margin-left: 20px; margin-top: 5px; }
+    .exercise-list label { display: block; margin-bottom: 5px; }
+    button { margin-top: 10px; margin-right: 10px; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h2>Wekelijkse Calisthenics Tracker</h2>
+  <p>Klik op een dag om oefeningen te verbergen of tonen:</p>
+
+  <div class="day-container" id="mon-container">
+    <div class="day-header" onclick="toggleExercises('mon')">
+      <label><input type="checkbox" id="mon" onchange="manualCheck('mon')"> Maandag – Push (Gym)</label>
+    </div>
+    <div id="mon-exercises" class="exercise-list">
+      <label><input type="checkbox" class="mon-ex" id="mon1"> Incline dumbbell press</label>
+      <label><input type="checkbox" class="mon-ex" id="mon2"> Dips (weighted)</label>
+      <label><input type="checkbox" class="mon-ex" id="mon3"> Pike push-ups / Handstand progressies</label>
+      <label><input type="checkbox" class="mon-ex" id="mon4"> Dumbbell shoulder press</label>
+      <label><input type="checkbox" class="mon-ex" id="mon5"> Triceps rope pushdown</label>
+      <label><input type="checkbox" class="mon-ex" id="mon6"> Plank</label>
+    </div>
+  </div>
+
+  <div class="day-container" id="tue-container">
+    <div class="day-header" onclick="toggleExercises('tue')">
+      <label><input type="checkbox" id="tue" onchange="manualCheck('tue')"> Dinsdag – Pull (Gym)</label>
+    </div>
+    <div id="tue-exercises" class="exercise-list">
+      <label><input type="checkbox" class="tue-ex" id="tue1"> Pull-ups</label>
+      <label><input type="checkbox" class="tue-ex" id="tue2"> Barbell bent-over row</label>
+      <label><input type="checkbox" class="tue-ex" id="tue3"> Inverted rows</label>
+      <label><input type="checkbox" class="tue-ex" id="tue4"> Bicep curls</label>
+      <label><input type="checkbox" class="tue-ex" id="tue5"> Face pulls</label>
+      <label><input type="checkbox" class="tue-ex" id="tue6"> Hanging leg raises</label>
+    </div>
+  </div>
+
+  <div class="day-container" id="thu-container">
+    <div class="day-header" onclick="toggleExercises('thu')">
+      <label><input type="checkbox" id="thu" onchange="manualCheck('thu')"> Donderdag – Legs</label>
+    </div>
+    <div id="thu-exercises" class="exercise-list">
+      <label><input type="checkbox" class="thu-ex" id="thu1"> Bulgarian split squats</label>
+      <label><input type="checkbox" class="thu-ex" id="thu2"> Goblet squats</label>
+      <label><input type="checkbox" class="thu-ex" id="thu3"> Romanian deadlifts</label>
+      <label><input type="checkbox" class="thu-ex" id="thu4"> Calf raises</label>
+      <label><input type="checkbox" class="thu-ex" id="thu5"> Wall sit</label>
+    </div>
+  </div>
+
+  <div class="day-container" id="fri-container">
+    <div class="day-header" onclick="toggleExercises('fri')">
+      <label><input type="checkbox" id="fri" onchange="manualCheck('fri')"> Vrijdag – Home Workout</label>
+    </div>
+    <div id="fri-exercises" class="exercise-list">
+      <label><input type="checkbox" class="fri-ex" id="fri1"> Push-ups (explosief / tempo)</label>
+      <label><input type="checkbox" class="fri-ex" id="fri2"> Pull-ups / Australian rows</label>
+      <label><input type="checkbox" class="fri-ex" id="fri3"> Bodyweight squats / jump squats</label>
+      <label><input type="checkbox" class="fri-ex" id="fri4"> Plank-to-push-up</label>
+      <label><input type="checkbox" class="fri-ex" id="fri5"> Leg raises / flutter kicks</label>
+    </div>
+  </div>
+
+  <div class="day-container" id="sat-container">
+    <div class="day-header" onclick="toggleExercises('sat')">
+      <label><input type="checkbox" id="sat" onchange="manualCheck('sat')"> Zaterdag – Full Gym</label>
+    </div>
+    <div id="sat-exercises" class="exercise-list">
+      <label><input type="checkbox" class="sat-ex" id="sat1"> Weighted dips</label>
+      <label><input type="checkbox" class="sat-ex" id="sat2"> Pull-ups</label>
+      <label><input type="checkbox" class="sat-ex" id="sat3"> L-sit hold</label>
+      <label><input type="checkbox" class="sat-ex" id="sat4"> Incline curls</label>
+      <label><input type="checkbox" class="sat-ex" id="sat5"> Ab rollouts / cable crunch</label>
+      <label><input type="checkbox" class="sat-ex" id="sat6"> Licht cardio</label>
+    </div>
+  </div>
+
+  <button onclick="saveProgress()">Opslaan</button>
+  <button onclick="clearProgress()">Handmatig Resetten</button>
+
+  <script>
+    const dayIds = ["mon", "tue", "thu", "fri", "sat"];
+
+    function toggleExercises(day) {
+      const el = document.getElementById(day + "-exercises");
+      el.style.display = el.style.display === "none" ? "block" : "none";
+    }
+
+    function manualCheck(day) {
+      const mainCheck = document.getElementById(day).checked;
+      document.querySelectorAll("." + day + "-ex").forEach(cb => {
+        cb.checked = mainCheck;
+      });
+    }
+
+    function checkDayComplete(day) {
+      const exercises = document.querySelectorAll("." + day + "-ex");
+      const allChecked = Array.from(exercises).every(cb => cb.checked);
+      const dayBox = document.getElementById(day);
+      const container = document.getElementById(day + "-exercises");
+
+      if (allChecked) {
+        dayBox.checked = true;
+        container.style.display = "none";
+      } else {
+        dayBox.checked = false;
+        container.style.display = "block";
+      }
+    }
+
+    function saveProgress() {
+      const inputs = document.querySelectorAll("input[type='checkbox']");
+      inputs.forEach(input => {
+        localStorage.setItem(input.id, input.checked);
+      });
+      localStorage.setItem("lastVisit", new Date().toISOString().split("T")[0]);
+      alert("Opgeslagen!");
+    }
+
+    function clearProgress() {
+      const inputs = document.querySelectorAll("input[type='checkbox']");
+      inputs.forEach(input => {
+        localStorage.removeItem(input.id);
+        input.checked = false;
+      });
+      localStorage.setItem("lastVisit", new Date().toISOString().split("T")[0]);
+      alert("Reset!");
+    }
+
+    function loadProgress() {
+      const lastVisit = localStorage.getItem("lastVisit");
+      const today = new Date();
+      const todayStr = today.toISOString().split("T")[0];
+      const isMonday = today.getDay() === 1;
+
+      if (!lastVisit || (isMonday && lastVisit !== todayStr)) {
+        clearProgress();
+      } else {
+        const inputs = document.querySelectorAll("input[type='checkbox']");
+        inputs.forEach(input => {
+          const saved = localStorage.getItem(input.id);
+          input.checked = saved === "true";
+        });
+      }
+
+      dayIds.forEach(day => {
+        document.querySelectorAll("." + day + "-ex").forEach(cb => {
+          cb.addEventListener("change", () => checkDayComplete(day));
+          checkDayComplete(day);
+        });
+      });
+
+      localStorage.setItem("lastVisit", todayStr);
+    }
+
+    window.onload = loadProgress;
+  </script>
+</body>
+</html>
